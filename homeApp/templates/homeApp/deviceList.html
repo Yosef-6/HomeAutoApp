@@ -1,0 +1,93 @@
+   
+{% extends "homeApp/base.html" %}
+{%block t%}
+<title>Device List</title>
+{%endblock t%}  
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2 id="greeting"> Welcome Home, {{ request.user.username }} </h2>
+
+<div class="table-container">
+    
+    <h3 class="heading" data-attr={{ node.hardwareID }}> Device List integrated with the hardwareID {{ node.hardwareID }} </h3>
+    
+        {% if message %}
+        <div class="ErrorPrev" style="margin-bottom:20px">{{ message }}</div>
+        {% endif %}
+        {%if success %}
+        <div class="SuccessPrev" style="margin-bottom:20px">{{ success  }}</div>
+        {%endif%}
+        <div class="SuccessPrev" style="margin-bottom:20px;display:none"></div> 
+
+        <table class="table">
+            <div id="td-head">
+             <thead>
+                  <tr>
+                    <th class="text-center">Device Number</th>
+                    <th class="text-center">Device Name</th>
+                    <th class="text-center">Pin Number(GPIO)</th>
+                    <th class="text-center">Mode Operation</th>
+                    <th class="text-center">Value</th>
+                    <th class="text-center">Controls</th>
+                    <th class="text-center">Delete</th>
+                  </tr>
+             </thead>
+            </div>
+             <tbody>
+                {%for D in DeviceList  %}
+                <tr class="activeRow" data-target={{D.pinNumber}}>
+                    <td class="text-lg-center text-right" data-label="Device Number" > {{ forloop.counter }}</td>
+                    <td class="text-lg-center text-right" data-label="Device Name">{{ D.deviceName }}</td>
+                    <td class="text-lg-center text-right" data-label="Device Pin number">{{ D.pinNumber }}</td>
+                    <td class="text-lg-center text-right" data-label="Mode Of Operation">{{ D.modeOperation }}</td>
+                    {% if D.usage == "bool" %}
+                       {% if D.state == False %}
+                         <td data-label="Value" data-comm={{ D.pinNumber }} id={{ forloop.counter }}>0</td>
+                       {% else %}
+                         <td data-label="Value" data-comm={{ D.pinNumber }} id={{ forloop.counter }}>1</td>
+                       {% endif %}
+                       {% if D.modeOperation != "INPUT" %}
+                       <td data-label="Controls">
+                        <label>
+                            <input type="checkbox" data-comm={{ D.pinNumber }}  data-label="Toggle" data-id={{forloop.counter}} data-pin={{D.pinNumber}} data-usage=bool
+                            {%if D.state == True%}
+                            checked
+                            {% endif %}
+                            >
+                        </label>
+                        </td>
+                        {%else%}
+                        <td data-label="Noinput">----</td>
+                        {% endif %}  
+                    {% else %}
+                    <td data-label="Value" id={{ forloop.counter }} data-comm={{ D.pinNumber }} data-unit={{ D.unit }}>{{ D.floatValue }} {{ D.unit}}</td>
+                    {% if D.modeOperation != "INPUT" %}
+                       <td data-label="Controls"><input type="number" step="0.1" min="-50" max="50" class="form-control w-100"  data-label="Toggle" data-pin={{D.pinNumber}} data-id={{forloop.counter}} placeholder={{D.unit}}></td>
+                    {%else%}
+                       <td data-label="Controls">----</td>
+                    {% endif %}
+                    {% endif %}
+                    <td data-label="Delete item"><button type="submit" class="btn btn-outline-danger" data-delete={{forloop.counter}} data-pin={{D.pinNumber}}><i class="bi bi-trash-fill"></i></button></td>
+                </tr>
+                {% empty %}  
+                <h3 class="heading" data-attr={{ node.hardwareID }}> No devices attached  </h3>
+                {% endfor %}
+             </tbody>
+        </table>
+    <div style="display:none;" id="DeviceRegForm" >
+
+        <h3 id="createNewDevice" class="mt-5"> Attach a new Device </h2><hr />
+        <div class="form-outline w-50" >
+            <form method="POST" action="{% url 'create' node.hardwareID %}" class="text-light" >
+                {% csrf_token %}
+                {{ form |crispy }}
+                <button type="submit" class="btn btn-primary">Save</button>
+              </form>
+        </div>
+    </div>
+    <button class="button-4" role="button" id="addDevice">Add Device</button>  
+</div>
+
+{% endblock content %}
+

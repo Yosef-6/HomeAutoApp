@@ -1,0 +1,20 @@
+{% extends "homeApp/base.html" %}
+{%block content%}
+{%block t%}
+<title>Login</title>
+{%endblock t%}  
+<div class="login-page">
+    <div class="form">
+      <form class="login-form" method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="text" name ="username" placeholder="Username"/>
+        <input type="password" name="password" placeholder="Password"/> 
+        <button type="submit" value="Login"> login</button>
+        {% if message %}
+           <div class="ErrorPrev">{{ message }}</div>
+        {% endif %}
+      </form>
+    </div>
+</div>
+
+{% endblock content%}

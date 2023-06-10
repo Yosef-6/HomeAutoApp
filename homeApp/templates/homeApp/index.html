@@ -1,0 +1,38 @@
+
+{% extends "homeApp/base.html" %}
+{%block t%}
+<title>Hardware List</title>
+{%endblock t%}  
+{% block content %}
+<h2 id="greeting"> Welcome Home, {{ request.user.username }} </h2>
+
+<div class="table-container">
+    {% if message %}
+    <div class="ErrorPrev">{{ message }}</div>
+    {% endif %}
+    <h3 class="heading"> Your Hardware Units </h2>
+    <table class="table">
+        <div id="td-head">
+         <thead>
+              <tr>
+                  <th class="text-center" data-label="Hname">Hardware Name</th>
+                  <th class="text-center" data-label="HID">Hardware ID</th>
+              </tr>
+         </thead>
+        </div>
+         <tbody>
+            {%for H in Hardware  %}
+               <tr>
+                   <td class="text-lg-center text-right" data-label="Hardware Name">{{ H.name }}</td>
+                   <td class="text-lg-center text-right" data-label="Hardware ID">{{ H.hardwareID }}</td>
+                   <td class="text-lg-center text-right" data-label="Access"><a href="{% url 'deviceList' H.hardwareID %}"><button type="button" class="button-access btn btn-outline-success">Device List</button></a>
+                   </td>
+               </tr>        
+            {% endfor %}
+         </tbody>
+    </table>
+    
+
+</div>
+
+{% endblock content%}
